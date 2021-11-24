@@ -230,7 +230,7 @@ services:
         depends_on:
             - openvpn-client
             - deluge
-            - jackett
+            - prowlarr
         restart: ${RESTART_POLICY}
 
     radarr:
@@ -255,7 +255,7 @@ services:
         depends_on:
             - openvpn-client
             - deluge
-            - jackett
+            - prowlarr
         restart: ${RESTART_POLICY}
     
     radarr-4k:
@@ -282,7 +282,7 @@ services:
         depends_on:
             - openvpn-client
             - deluge
-            - jackett
+            - prowlarr
         restart: ${RESTART_POLICY}
 
     bazarr:
