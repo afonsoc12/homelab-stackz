@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+
+# ==================================================
+# Portainer
+# ==================================================
+    portainer:
+        image: portainer/portainer:latest
+        container_name: portainer
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ${APPDATA_PATH}/portainer:/data
+        ports:
+            - 9000:9000
+            - 8000:8000
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# OpenVPN - Access Server
+# ==================================================
+    # openvpn-as:
+    #     image: linuxserver/openvpn-as:latest
+    #     container_name: openvpn-as
+    #     hostname: openvpn-as
+    #     cap_add:
+    #         - NET_ADMIN
+    #     environment:
+    #         - PUID=${PUID}
+    #         - PGID=${PGID}
+    #         - TZ=${TZ}
+    #         #- INTERFACE=eth0 #optional
+    #     volumes:
+    #         - ${APPDATA_PATH}/openvpn-as:/config
+    #     ports:
+    #         - 943:943
+    #         - 9443:9443
+    #         - 1194:1194/udp
+    #     network_mode: bridge
+    #     restart: ${RESTART_POLICY}
+
+# ==================================================
+# Wireguard
+# ==================================================
+    wireguard:
+        image: linuxserver/wireguard:latest
+        container_name: wireguard
+        cap_add:
+            - NET_ADMIN
+            - SYS_MODULE
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+            - SERVERURL=${MAIN_WIREGUARD_SERVER_URL}
+            - SERVERPORT=${MAIN_WIREGUARD_SERVERPORT}
+            - PEERS=${MAIN_WIREGUARD_PEERS}
+            - PEERDNS=auto #optional
+            - INTERNAL_SUBNET=10.13.13.0 #optional
+            - ALLOWEDIPS=0.0.0.0/0 #optional
+        volumes:
+            - ${APPDATA_PATH}/wireguard:/config
+            - /lib/modules:/lib/modules
+        ports:
+            - ${MAIN_WIREGUARD_PEERS}:${MAIN_WIREGUARD_PEERS}/udp
+        sysctls:
+            - net.ipv4.conf.all.src_valid_mark=1
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
