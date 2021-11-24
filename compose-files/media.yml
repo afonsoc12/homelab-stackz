@@ -1,0 +1,412 @@
+version: '3.5'
+
+services:
+
+# ==================================================
+# VPN Containers
+# ==================================================
+    # Containers will be run using this container's network, so the ports need to be exposted
+    # in this container, rather then in the individual containers
+    openvpn-client:
+        image: dperson/openvpn-client:latest
+        container_name: openvpn-client
+        cap_add:
+            - net_admin
+        environment:
+            - GROUPID=0 #${PGID} # If PGID is set, it leaks the IP in qbittorrent
+            - TZ=${TZ}
+            - FIREWALL=""  # Kill switch
+            - DNS=${MEDIA_OPENVPN_DNS}
+            - VPN_AUTH=${MEDIA_VPN_USER};${MEDIA_VPN_PASS}
+        security_opt:
+            - label:disable
+        volumes:
+            # Put .ovpn configuration file in the /vpn directory
+            - ${APPDATA_PATH}/openvpn-client:/vpn
+            - /dev/net:/dev/net:z
+
+        tmpfs:
+            - /run
+            - /tmp
+        ports:
+            # Uncomment the ones used
+            - 8112:8112/tcp     # Deluge
+            - 58846:58846/tcp   # Deluge
+            - 58946:58946/tcp   # Deluge
+            - 58946:58946/udp   # Deluge
+            - 8881:8881         # Qbittorrent
+            - 6881:6881         # Qbittorrent
+            - 6881:6881/udp     # Qbittorrent
+            - 9091:9091         # Transmission
+            - 51413:51413       # Transmission
+            - 51413:51413/udp   # Transmission
+            - 8088:8080         # Sabnzbd (usenet-compose.yml)
+            - 9990:9090         # Sabnzbd (usenet-compose.yml)
+            - 6789:6789         # Nzbget
+            - 8008:8000         # Pyload
+            - 7227:7227         # Pyload
+            - 8989:8989         # Sonarr
+            - 7878:7878         # Radarr
+            - 7879:7879         # Radarr-4k
+            - 6767:6767         # Bazarr
+            - 9117:9117         # Jackett
+            - 9696:9696         # Jackett
+            - 5076:5076         # Nzbhydra2
+        stdin_open: true
+        tty: true
+        #read_only: true
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Download Containers
+# ==================================================
+    deluge:
+        image: linuxserver/deluge:latest
+        container_name: deluge
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+            - UMASK=022 #optional
+            - DELUGE_LOGLEVEL=info #optional
+        volumes:
+            - ${APPDATA_PATH}/deluge:/config
+            - ${DOWNLOADS_PATH}/deluge:/downloads
+        #ports:
+        #    - 58846:58846/tcp
+        #    - 58946:58946/tcp
+        #    - 58946:58946/udp
+        #    - 8112:8112/tcp
+        network_mode: "service:openvpn-client"
+        depends_on:
+            - openvpn-client
+        restart: ${RESTART_POLICY}
+    
+    #qbittorrent:
+    #    image: linuxserver/qbittorrent:latest
+    #    container_name: qbittorrent
+    #    environment:
+    #        - PUID=${PUID}
+    #        - PGID=${PGID}
+    #        - TZ=${TZ}
+    #        - UMASK=022
+    #        - WEBUI_PORT=8881
+    #    volumes:
+    #        - ${APPDATA_PATH}/qbittorrent:/config
+    #        - ${DOWNLOADS_PATH}/qbittorrent:/downloads
+    #    # ports:
+    #    #     - 6881:6881
+    #    #     - 6881:6881/udp
+    #    #     - 8080:8080
+    #    network_mode: "service:openvpn-client"
+    #    depends_on:
+    #        - openvpn-client
+    #    entrypoint: ["echo", "Container qbittorrent disabled by me on docker-compose.yml"]
+    #    #restart: ${RESTART_POLICY}
+
+    #transmission:
+    #    image: linuxserver/transmission:latest
+    #    container_name: transmission
+    #    environment:
+    #        - PUID=${PUID}
+    #        - PGID=${PGID}
+    #        - TZ=${TZ}
+    #        - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+    #        #- USER=username #optional
+    #        #- PASS=password #optional
+    #    volumes:
+    #        - ${APPDATA_PATH}/transmission:/config
+    #        - ${DOWNLOADS_PATH}/transmission:/downloads
+    #        - ${DOWNLOADS_PATH}/transmission/watch:/watch
+    #    # ports:
+    #    #     - 9091:9091
+    #    #     - 51413:51413
+    #    #     - 51413:51413/udp
+    #    network_mode: "service:openvpn-client"
+    #    depends_on:
+    #        - openvpn-client
+    #    entrypoint: ["echo", "Container transmission disabled by me on docker-compose.yml"]
+    #    #restart: ${RESTART_POLICY}
+        
+    #sabnzbd:
+    #    image: linuxserver/sabnzbd:latest
+    #    container_name: sabnzbd
+    #    environment:
+    #        - PUID=${PUID}
+    #        - PGID=${PGID}
+    #        - TZ=${TZ}
+    #    volumes:
+    #        - ${APPDATA_PATH}/sabnzbd:/config
+    #        - ${DOWNLOADS_PATH}/sabnzbd:/downloads
+    #    #ports:
+    #    #    - 8080:8080
+    #    #    - 9090:9090
+    #    network_mode: "service:openvpn-client"
+    #    depends_on:
+    #        - openvpn-client
+    #    entrypoint: ["echo", "Container sabnzbd disabled by me on docker-compose.yml"]
+    #    #restart: ${RESTART_POLICY}
+    
+    #nzbget:
+    #    image: linuxserver/nzbget:latest
+    #    container_name: nzbget
+    #    environment:
+    #        - PUID=${PUID}
+    #        - PGID=${PGID}
+    #        - TZ=${TZ}
+    #    volumes:
+    #        - ${APPDATA_PATH}/nzbget:/config
+    #        - ${DOWNLOADS_PATH}/nzbget:/downloads
+    #    #ports:
+    #    #  - 6789:6789
+    #    network_mode: "service:openvpn-client"
+    #    depends_on:
+    #        - openvpn-client
+    #    entrypoint: ["echo", "Container nzbget disabled by me on docker-compose.yml"]
+    #    #restart: ${RESTART_POLICY}
+
+    youtube-dl:
+        image: mikenye/youtube-dl:latest
+        container_name: youtube-dl
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/youtube-dl/youtube-dl.conf:/etc/youtube-dl.conf:ro
+            - ${APPDATA_PATH}/youtube-dl/.netrc:/home/dockeruser/.netrc:ro
+            - ${APPDATA_PATH}/youtube-dl/youtube-dl.err:/log/youtube-dl.err
+            - ${APPDATA_PATH}/youtube-dl/youtube-dl.log:/log/youtube-dl.log
+            - ${DOWNLOADS_PATH}/youtube-dl:/workdir
+        network_mode: service:openvpn-client
+        depends_on:
+            - openvpn-client
+        #stdin_open: true
+        tty: true   
+        entrypoint: /bin/sh
+        restart: ${RESTART_POLICY}
+
+    #pyload:
+    #    image: linuxserver/pyload:latest
+    #    container_name: pyload
+    #    environment:
+    #        - PUID=${PUID}
+    #        - PGID=${PGID}
+    #        - TZ=${TZ}
+    #    volumes:
+    #        - ${APPDATA_PATH}/pyload:/config
+    #        - ${DOWNLOADS_PATH}/pyload:/downloads
+    #    #ports:
+    #        #- 8000:8000
+    #        #- 7227:7227 #optional
+    #    network_mode: "service:openvpn-client"
+    #    depends_on:
+    #        - openvpn-client
+    #    restart: ${RESTART_POLICY}
+        
+# ==================================================
+# Media Management Containers
+# ==================================================
+    sonarr:
+        image: linuxserver/sonarr:latest
+        container_name: sonarr
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+            - UMASK=022 #optional
+        volumes:
+            - ${APPDATA_PATH}/sonarr:/config
+            #- ${MEDIA_PATH}:/media
+            #- ${DOWNLOADS_PATH}:/downloads
+            # Work around to allow Sonarr to hardlink torrents.
+            # For this, both need to be in the same drive /data
+            - ${DATA_PATH}:/data
+        # Set on openvpn-client
+        #ports:
+        #    - 8989:8989     # Sonarr
+        network_mode: service:openvpn-client
+        depends_on:
+            - openvpn-client
+            - deluge
+            - jackett
+        restart: ${RESTART_POLICY}
+
+    radarr:
+        image: linuxserver/radarr:latest
+        container_name: radarr
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+            - UMASK=022 #optional
+        volumes:
+            - ${APPDATA_PATH}/radarr:/config
+            #- ${MEDIA_PATH}:/media
+            #- ${DOWNLOADS_PATH}:/downloads
+            # Work around to allow Sonarr to hardlink torrents.
+            # For this, both need to be in the same drive /data
+            - ${DATA_PATH}:/data
+        # Set on openvpn-client
+        #ports:
+           # - 7878:7878     # Radarr
+        network_mode: service:openvpn-client
+        depends_on:
+            - openvpn-client
+            - deluge
+            - jackett
+        restart: ${RESTART_POLICY}
+    
+    radarr-4k:
+        image: linuxserver/radarr:latest
+        container_name: radarr-4k
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+            - UMASK=022 #optional
+        volumes:
+            - ${APPDATA_PATH}/radarr-4k:/config
+            #- ${MEDIA_PATH}:/media
+            #- ${DOWNLOADS_PATH}:/downloads
+            # Work around to allow Sonarr to hardlink torrents.
+            # For this, both need to be in the same drive /data
+            - ${DATA_PATH}:/data
+        # Set on openvpn-client
+        #expose:
+        #    - 7979      # Redirect to another port on openvpn-client
+        #ports:
+        #    - 7879:7878     # Radarr-4k
+        network_mode: "service:openvpn-client"
+        depends_on:
+            - openvpn-client
+            - deluge
+            - jackett
+        restart: ${RESTART_POLICY}
+
+    bazarr:
+        image: linuxserver/bazarr:latest
+        container_name: bazarr
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+            - UMASK=022 #optional
+        volumes:
+            - ${APPDATA_PATH}/bazarr:/config
+            - ${DATA_PATH}:/data
+        #ports:
+        #    - 6767:6767
+        network_mode: "service:openvpn-client"
+        #depends_on:
+        #    - openvpn-client
+        #    - sonarr
+        #    - radarr
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Indexer Containers
+# ==================================================
+    # jackett:
+    #     image: linuxserver/jackett:latest
+    #     container_name: jackett
+    #     environment:
+    #         - PUID=${PUID}
+    #         - PGID=${PGID}
+    #         - TZ=${TZ}
+    #     volumes:
+    #         - ${APPDATA_PATH}/jackett:/config
+    #         - ${DOWNLOADS_PATH}/deluge/watch:/downloads
+    #     # ports:
+    #     #   - 9117:9117
+    #     network_mode: "service:openvpn-client"
+    #     depends_on:
+    #         - openvpn-client
+    #     restart: ${RESTART_POLICY}
+    prowlarr:
+    image: linuxserver/prowlarr:develop
+    container_name: prowlarr
+    environment:
+        - PUID=${PUID}
+        - PGID=${PGID}
+        - TZ=${TZ}
+    volumes:
+        - ${APPDATA_PATH}/prowlarr:/config
+        - ${DOWNLOADS_PATH}/deluge/watch:/downloads
+    network_mode: service:openvpn-client
+    depends_on:
+        - openvpn-client
+    restart: ${RESTART_POLICY}
+    
+    #nzbhydra2:
+    #    image: linuxserver/nzbhydra2:latest
+    #    container_name: nzbhydra2
+    #    environment:
+    #        - PUID=${PUID}
+    #        - PGID=${PGID}
+    #        - TZ=${TZ}
+    #    volumes:
+    #        - ${APPDATA_PATH}/nzbhydra2:/config
+    #        - ${DOWNLOADS_PATH}/nzbhydra2:/downloads
+    #    #ports:
+    #    #    - 5076:5076
+    #    network_mode: "service:openvpn-client"
+    #    depends_on:
+    #        - openvpn-client
+    #    entrypoint: ["echo", "Container nzbhydra2 disabled by me on docker-compose.yml"]
+    #    #restart: ${RESTART_POLICY}
+
+# ==================================================
+# Monitoring Containers and user media management (no VPN, bridge network)
+# ==================================================
+    tautulli:
+        image: linuxserver/tautulli:latest
+        container_name: tautulli
+        depends_on:
+            - plex
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/tautulli:/config
+            - ${APPDATA_PATH}/plex/Plex\ Media\ Server/Logs:/logs
+        ports:
+            - 8181:8181
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+    
+    overseerr:
+        image: linuxserver/overseerr:latest
+        container_name: overseerr
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/overseerr:/config
+        ports:
+            - 5055:5055
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Plex and Plex Users Management (no VPN, host and bridge networks)
+# ==================================================
+    plex:
+        image: linuxserver/plex:latest
+        container_name: plex
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+            - VERSION=docker
+            - UMASK=022 #optional
+            - PLEX_CLAIM= #optional
+        volumes:
+            - ${APPDATA_PATH}/plex:/config
+            - ${MEDIA_PATH}:/media
+        network_mode: host
+        restart: ${RESTART_POLICY}
+    
