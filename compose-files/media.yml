@@ -325,19 +325,19 @@ services:
     #         - openvpn-client
     #     restart: ${RESTART_POLICY}
     prowlarr:
-    image: linuxserver/prowlarr:develop
-    container_name: prowlarr
-    environment:
-        - PUID=${PUID}
-        - PGID=${PGID}
-        - TZ=${TZ}
-    volumes:
-        - ${APPDATA_PATH}/prowlarr:/config
-        - ${DOWNLOADS_PATH}/deluge/watch:/downloads
-    network_mode: service:openvpn-client
-    depends_on:
-        - openvpn-client
-    restart: ${RESTART_POLICY}
+        image: linuxserver/prowlarr:develop
+        container_name: prowlarr
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/prowlarr:/config
+            - ${DOWNLOADS_PATH}/deluge/watch:/downloads
+        network_mode: service:openvpn-client
+        depends_on:
+            - openvpn-client
+        restart: ${RESTART_POLICY}
     
     #nzbhydra2:
     #    image: linuxserver/nzbhydra2:latest
