@@ -63,7 +63,7 @@ services:
             - ${APPDATA_PATH}/wireguard:/config
             - /lib/modules:/lib/modules
         ports:
-            - ${MAIN_WIREGUARD_PEERS}:${MAIN_WIREGUARD_PEERS}/udp
+            - ${MAIN_WIREGUARD_SERVERPORT}:${MAIN_WIREGUARD_SERVERPORT}/udp
         sysctls:
             - net.ipv4.conf.all.src_valid_mark=1
         network_mode: bridge
