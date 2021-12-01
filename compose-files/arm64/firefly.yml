@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  firefly:
+    image: fireflyiii/core:latest
+    container_name: firefly
+    environment:
+      - TZ=${TZ}
+      - APP_KEY=${FIREFLY_FIREFLY_APP_KEY}
+      - DB_HOST=${FIREFLY_FIREFLY_DB_HOST}
+      - DB_PORT=${FIREFLY_FIREFLY_DB_PORT}
+      - DB_CONNECTION=mysql
+      - DB_DATABASE=${FIREFLY_FIREFLY_DB_NAME}
+      - DB_USERNAME=${FIREFLY_FIREFLY_DB_USERNAME}
+      - DB_PASSWORD=${FIREFLY_FIREFLY_DB_PASSWORD}
+      - APP_URL=${FIREFLY_FIREFLY_APP_URL}
+      - TRUSTED_PROXIES=**
+    volumes:
+      - ${APPDATA_PATH}/firefly:/var/www/html/storage/upload
+    ports:
+    # You may disable ports if they are forwarded by reverse proxy
+      - 8666:8080
+    networks:
+      - firefly-net
+      - proxy
+    depends_on:
+      - mariadb-firefly
+    restart: ${RESTART_POLICY}
+
+  mariadb-firefly:
+    image: linuxserver/mariadb:latest
+    container_name: mariadb-firefly
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - MYSQL_ROOT_PASSWORD=${FIREFLY_MARIADB_FIREFLY_ROOT_PASSWORD}
+    volumes:
+      - ${APPDATA_PATH}/mariadb-firefly:/config
+    #ports:
+    #  - 3306:3306
+    networks:
+      - firefly-net
+    restart: ${RESTART_POLICY}
+
+networks:
+  firefly-net:
+    name: firefly-net
+    driver: bridge
+  proxy:
+    external:
+      name: reverse-proxy
