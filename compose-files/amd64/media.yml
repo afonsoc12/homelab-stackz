@@ -16,7 +16,7 @@ services:
             - GROUPID=0 #${PGID} # If PGID is set, it leaks the IP in qbittorrent
             - TZ=${TZ}
             - FIREWALL=""  # Kill switch
-            - DNS=${MEDIA_OPENVPN_DNS}
+            - DNS=${MEDIA_OPENVPN-CLIENT_DNS}
             - VPN_AUTH=${MEDIA_VPN_USER};${MEDIA_VPN_PASS}
         security_opt:
             - label:disable

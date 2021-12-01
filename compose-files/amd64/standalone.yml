@@ -22,32 +22,6 @@ services:
     #     restart: ${RESTART_POLICY}
 
 # ==================================================
-# Swag (former letsencrypt)
-# ==================================================
-    swag:
-        image: linuxserver/swag:latest
-        container_name: swag
-        cap_add:
-            - net_admin
-        environment:
-            - PUID=${PUID}
-            - PGID=${PGID}
-            - TZ=${TZ}
-            - URL=${STANDALONE_SWAG_URL}
-            - SUBDOMAINS=${STANDALONE_SWAG_SUBDOMAINS}
-            - VALIDATION=${STANDALONE_SWAG_VALIDATION}
-            - DNSPLUGIN=${STANDALONE_SWAG_DNSPLUGIN}
-            - DHLEVEL=2048
-            - ONLY_SUBDOMAINS=${STANDALONE_SWAG_ONLYSUBDOMAINS}
-        volumes:
-            - ${APPDATA_PATH}/swag:/config
-        ports:
-            - 80:80
-            - 443:443
-        network_mode: bridge
-        restart: ${RESTART_POLICY}
-
-# ==================================================
 # ddclient
 # ==================================================
     ddclient:
