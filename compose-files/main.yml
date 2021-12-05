@@ -46,29 +46,6 @@ services:
         restart: ${RESTART_POLICY}
 
 # ==================================================
-# OpenVPN - Access Server
-# ==================================================
-    # openvpn-as:
-    #     image: linuxserver/openvpn-as:latest
-    #     container_name: openvpn-as
-    #     hostname: openvpn-as
-    #     cap_add:
-    #         - NET_ADMIN
-    #     environment:
-    #         - PUID=${PUID}
-    #         - PGID=${PGID}
-    #         - TZ=${TZ}
-    #         #- INTERFACE=eth0 #optional
-    #     volumes:
-    #         - ${APPDATA_PATH}/openvpn-as:/config
-    #     ports:
-    #         - 943:943
-    #         - 9443:9443
-    #         - 1194:1194/udp
-    #     network_mode: bridge
-    #     restart: ${RESTART_POLICY}
-
-# ==================================================
 # Wireguard
 # ==================================================
     wireguard:
