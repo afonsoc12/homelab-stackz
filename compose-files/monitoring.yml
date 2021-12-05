@@ -1,0 +1,142 @@
+version: '3.5'
+
+services:
+
+# ==================================================
+# Grafana
+# ==================================================
+    grafana:
+        image: grafana/grafana:latest
+        container_name: grafana
+        user: ${PUID}
+        volumes:
+            - ${APPDATA_PATH}/grafana:/var/lib/grafana
+            - ${APPDATA_PATH}/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+        ports:
+            - 3000:3000
+        networks:
+            - monitoring
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# InfluxDB
+# ==================================================
+    influxdb:
+        image: influxdb:1.8.4
+        container_name: influxdb
+        healthcheck: # Allow influx to start before telegraf
+            test: ["CMD", "curl", "-f", "http://influxdb:8086/health"]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 5s
+        volumes:
+            - ${APPDATA_PATH}/influxdb:/var/lib/influxdb
+        ports:
+            - 8086:8086
+        networks:
+            - monitoring
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Telegraf
+# ==================================================
+    telegraf:
+        build: telegraf
+        image: telegraf:latest # Custom image
+        container_name: telegraf
+        hostname: telegraf
+        depends_on:
+            influxdb:
+                condition: service_healthy
+        volumes:
+            - ${APPDATA_PATH}/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+            - /var/run/docker.sock:/var/run/docker.sock # Container info
+        networks:
+            - monitoring
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Intrusion-monitor
+# ==================================================
+    intrusion-monitor:
+        image: afonsoc12/intrusion-monitor:latest
+        container_name: intrusion-monitor
+        depends_on:
+            influxdb:
+                condition: service_healthy
+        environment:
+            - TZ=${TZ}
+            - API_KEY=${INTRUSION_MONITOR_API_KEY}
+            - INFLUXDB_HOST=influxdb
+            - INFLUXDB_DATABASE=intrusion-monitor
+            - INFLUXDB_PORT=8086
+            - INFLUXDB_USER=
+            - INFLUXDB_PASSWORD=
+            - OPERATION_MODE=watchdog
+            #- SSH_LOG_PATH=
+            #- LOG_LEVEL=debug
+        volumes:
+            - /var/log/ssh-intrusion.log:/watchdog/log/auth.log:ro
+        ports:
+            - 7007:7007
+        networks:
+            - monitoring
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Organizr
+# ==================================================
+    organizr:
+        image: organizr/organizr:latest
+        container_name: organizr
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - fpm=true #"false" `#optional`
+            #- branch="v2-master" `#optional`
+        volumes:
+            - ${APPDATA_PATH}/organizr:/config
+        ports:
+            - 3030:80
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Heimdall
+# ==================================================
+    heimdall:
+        image: linuxserver/heimdall:latest
+        container_name: heimdall
+        environment:
+            - PUID=${PUID}
+            - PGID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/heimdall:/config
+        ports:
+            - 3060:80
+            - 3070:443
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Homer
+# ==================================================
+    homer:
+        image: b4bz/homer:latest
+        container_name: homer
+        environment:
+            - UID=${PUID}
+            - GID=${PGID}
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/homer:/www/assets
+        ports:
+            - 8777:8080
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+networks:
+    monitoring:
+        name: monitoring

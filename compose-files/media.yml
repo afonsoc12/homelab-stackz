@@ -37,9 +37,6 @@ services:
             - 8881:8881         # Qbittorrent
             - 6881:6881         # Qbittorrent
             - 6881:6881/udp     # Qbittorrent
-            - 9091:9091         # Transmission
-            - 51413:51413       # Transmission
-            - 51413:51413/udp   # Transmission
             - 8088:8080         # Sabnzbd (usenet-compose.yml)
             - 9990:9090         # Sabnzbd (usenet-compose.yml)
             - 6789:6789         # Nzbget
@@ -49,8 +46,7 @@ services:
             - 7878:7878         # Radarr
             - 7879:7879         # Radarr-4k
             - 6767:6767         # Bazarr
-            - 9117:9117         # Jackett
-            - 9696:9696         # Jackett
+            - 9696:9696         # Prowlarr
             - 5076:5076         # Nzbhydra2
         stdin_open: true
         tty: true
@@ -102,32 +98,7 @@ services:
     #    network_mode: "service:openvpn-client"
     #    depends_on:
     #        - openvpn-client
-    #    entrypoint: ["echo", "Container qbittorrent disabled by me on docker-compose.yml"]
-    #    #restart: ${RESTART_POLICY}
-
-    #transmission:
-    #    image: linuxserver/transmission:latest
-    #    container_name: transmission
-    #    environment:
-    #        - PUID=${PUID}
-    #        - PGID=${PGID}
-    #        - TZ=${TZ}
-    #        - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
-    #        #- USER=username #optional
-    #        #- PASS=password #optional
-    #    volumes:
-    #        - ${APPDATA_PATH}/transmission:/config
-    #        - ${DOWNLOADS_PATH}/transmission:/downloads
-    #        - ${DOWNLOADS_PATH}/transmission/watch:/watch
-    #    # ports:
-    #    #     - 9091:9091
-    #    #     - 51413:51413
-    #    #     - 51413:51413/udp
-    #    network_mode: "service:openvpn-client"
-    #    depends_on:
-    #        - openvpn-client
-    #    entrypoint: ["echo", "Container transmission disabled by me on docker-compose.yml"]
-    #    #restart: ${RESTART_POLICY}
+    #    restart: ${RESTART_POLICY}
         
     #sabnzbd:
     #    image: linuxserver/sabnzbd:latest
@@ -163,8 +134,7 @@ services:
     #    network_mode: "service:openvpn-client"
     #    depends_on:
     #        - openvpn-client
-    #    entrypoint: ["echo", "Container nzbget disabled by me on docker-compose.yml"]
-    #    #restart: ${RESTART_POLICY}
+    #    restart: ${RESTART_POLICY}
 
     youtube-dl:
         image: mikenye/youtube-dl:latest
@@ -197,6 +167,7 @@ services:
     #    volumes:
     #        - ${APPDATA_PATH}/pyload:/config
     #        - ${DOWNLOADS_PATH}/pyload:/downloads
+    #    # Set on openvpn-client
     #    #ports:
     #        #- 8000:8000
     #        #- 7227:7227 #optional
@@ -299,31 +270,15 @@ services:
         #ports:
         #    - 6767:6767
         network_mode: "service:openvpn-client"
-        #depends_on:
-        #    - openvpn-client
-        #    - sonarr
-        #    - radarr
+        depends_on:
+            - openvpn-client
+            - sonarr
+            - radarr
         restart: ${RESTART_POLICY}
 
 # ==================================================
 # Indexer Containers
 # ==================================================
-    # jackett:
-    #     image: linuxserver/jackett:latest
-    #     container_name: jackett
-    #     environment:
-    #         - PUID=${PUID}
-    #         - PGID=${PGID}
-    #         - TZ=${TZ}
-    #     volumes:
-    #         - ${APPDATA_PATH}/jackett:/config
-    #         - ${DOWNLOADS_PATH}/deluge/watch:/downloads
-    #     # ports:
-    #     #   - 9117:9117
-    #     network_mode: "service:openvpn-client"
-    #     depends_on:
-    #         - openvpn-client
-    #     restart: ${RESTART_POLICY}
     prowlarr:
         image: linuxserver/prowlarr:develop
         container_name: prowlarr
@@ -334,6 +289,9 @@ services:
         volumes:
             - ${APPDATA_PATH}/prowlarr:/config
             - ${DOWNLOADS_PATH}/deluge/watch:/downloads
+        # Set on openvpn-client
+        #ports:
+        #    - 9696:9696     # Prowlarr
         network_mode: service:openvpn-client
         depends_on:
             - openvpn-client

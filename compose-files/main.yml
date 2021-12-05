@@ -121,7 +121,9 @@ services:
         ports:
             - 80:80
             - 443:443
-        network_mode: bridge
+        networks: 
+            - reverse-proxy
+            - authelia
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -138,7 +140,6 @@ services:
             - ${APPDATA_PATH}/authelia:/config
         networks:
             - authelia
-            - reverse-proxy
         depends_on:
             - mariadb-authelia
         restart: ${RESTART_POLICY}

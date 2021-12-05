@@ -13,7 +13,7 @@ services:
     #         - WATCHTOWER_INCLUDE_STOPPED=true
     #         - WATCHTOWER_REVIVE_STOPPED=true
     #         - WATCHTOWER_DEBUG=true
-    #         - WATCHTOWER_SCHEDULE=0 0 1 * * ?   # Everyday at 1am
+    #         - WATCHTOWER_SCHEDULE=${STANDALONE_WATCHTOWER_SCHEDULE}   # Everyday at 1am
     #         #- WATCHTOWER_ROLLING_RESTART=true
     #         - WATCHTOWER_TIMEOUT=60  
     #     volumes:
