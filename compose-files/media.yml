@@ -229,32 +229,32 @@ services:
             - prowlarr
         restart: ${RESTART_POLICY}
     
-    radarr-4k:
-        image: linuxserver/radarr:latest
-        container_name: radarr-4k
-        environment:
-            - PUID=${PUID}
-            - PGID=${PGID}
-            - TZ=${TZ}
-            - UMASK=022 #optional
-        volumes:
-            - ${APPDATA_PATH}/radarr-4k:/config
-            #- ${MEDIA_PATH}:/media
-            #- ${DOWNLOADS_PATH}:/downloads
-            # Work around to allow Sonarr to hardlink torrents.
-            # For this, both need to be in the same drive /data
-            - ${DATA_PATH}:/data
-        # Set on openvpn-client
-        #expose:
-        #    - 7979      # Redirect to another port on openvpn-client
-        #ports:
-        #    - 7879:7878     # Radarr-4k
-        network_mode: "service:openvpn-client"
-        depends_on:
-            - openvpn-client
-            - deluge
-            - prowlarr
-        restart: ${RESTART_POLICY}
+    # radarr-4k:
+    #     image: linuxserver/radarr:latest
+    #     container_name: radarr-4k
+    #     environment:
+    #         - PUID=${PUID}
+    #         - PGID=${PGID}
+    #         - TZ=${TZ}
+    #         - UMASK=022 #optional
+    #     volumes:
+    #         - ${APPDATA_PATH}/radarr-4k:/config
+    #         #- ${MEDIA_PATH}:/media
+    #         #- ${DOWNLOADS_PATH}:/downloads
+    #         # Work around to allow Sonarr to hardlink torrents.
+    #         # For this, both need to be in the same drive /data
+    #         - ${DATA_PATH}:/data
+    #     # Set on openvpn-client
+    #     #expose:
+    #     #    - 7979      # Redirect to another port on openvpn-client
+    #     #ports:
+    #     #    - 7879:7878     # Radarr-4k
+    #     network_mode: "service:openvpn-client"
+    #     depends_on:
+    #         - openvpn-client
+    #         - deluge
+    #         - prowlarr
+    #     restart: ${RESTART_POLICY}
 
     bazarr:
         image: linuxserver/bazarr:latest
