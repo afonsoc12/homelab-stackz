@@ -47,6 +47,7 @@ networks:
   firefly-net:
     name: firefly-net
     driver: bridge
+    
   proxy:
     # Must have started swag before
     external:

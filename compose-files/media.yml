@@ -157,24 +157,24 @@ services:
         entrypoint: /bin/sh
         restart: ${RESTART_POLICY}
 
-    #pyload:
-    #    image: linuxserver/pyload:latest
-    #    container_name: pyload
-    #    environment:
-    #        - PUID=${PUID}
-    #        - PGID=${PGID}
-    #        - TZ=${TZ}
-    #    volumes:
-    #        - ${APPDATA_PATH}/pyload:/config
-    #        - ${DOWNLOADS_PATH}/pyload:/downloads
-    #    # Set on openvpn-client
-    #    #ports:
-    #        #- 8000:8000
-    #        #- 7227:7227 #optional
-    #    network_mode: "service:openvpn-client"
-    #    depends_on:
-    #        - openvpn-client
-    #    restart: ${RESTART_POLICY}
+    pyload:
+       image: linuxserver/pyload:latest
+       container_name: pyload
+       environment:
+           - PUID=${PUID}
+           - PGID=${PGID}
+           - TZ=${TZ}
+       volumes:
+           - ${APPDATA_PATH}/pyload:/config
+           - ${DOWNLOADS_PATH}/pyload:/downloads
+       # Set on openvpn-client
+       #ports:
+           #- 8000:8000
+           #- 7227:7227 #optional
+       network_mode: "service:openvpn-client"
+       depends_on:
+           - openvpn-client
+       restart: ${RESTART_POLICY}
         
 # ==================================================
 # Media Management Containers
