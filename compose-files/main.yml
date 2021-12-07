@@ -94,7 +94,8 @@ services:
             - ${MAIN_WIREGUARD_SERVERPORT}:${MAIN_WIREGUARD_SERVERPORT}/udp
         sysctls:
             - net.ipv4.conf.all.src_valid_mark=1
-        network_mode: bridge
+        networks:
+            - reverse-proxy
         restart: ${RESTART_POLICY}
 
 
