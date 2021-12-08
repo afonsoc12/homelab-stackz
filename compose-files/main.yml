@@ -14,7 +14,8 @@ services:
         ports:
             - 9000:9000
             - 8000:8000
-        network_mode: bridge
+        networks:
+            - reverse-proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================

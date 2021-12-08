@@ -332,7 +332,8 @@ services:
             - ${APPDATA_PATH}/plex/Plex\ Media\ Server/Logs:/logs
         ports:
             - 8181:8181
-        network_mode: bridge
+        networks:
+            - proxy
         restart: ${RESTART_POLICY}
     
     overseerr:
@@ -346,7 +347,8 @@ services:
             - ${APPDATA_PATH}/overseerr:/config
         ports:
             - 5055:5055
-        network_mode: bridge
+        networks:
+            - proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -367,4 +369,9 @@ services:
             - ${MEDIA_PATH}:/media
         network_mode: host
         restart: ${RESTART_POLICY}
-    
+
+networks:
+    proxy:
+        # Must have started swag before
+        external:
+            name: reverse-proxy

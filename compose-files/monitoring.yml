@@ -16,6 +16,7 @@ services:
             - 3000:3000
         networks:
             - monitoring
+            - proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -99,7 +100,8 @@ services:
             - ${APPDATA_PATH}/organizr:/config
         ports:
             - 3030:80
-        network_mode: bridge
+        networks:
+            - proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -117,7 +119,8 @@ services:
         ports:
             - 3060:80
             - 3070:443
-        network_mode: bridge
+        networks:
+            - proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -134,9 +137,15 @@ services:
             - ${APPDATA_PATH}/homer:/www/assets
         ports:
             - 8777:8080
-        network_mode: bridge
+        networks:
+            - proxy
         restart: ${RESTART_POLICY}
 
 networks:
     monitoring:
         name: monitoring
+
+    proxy:
+        # Must have started swag before
+        external:
+            name: reverse-proxy
