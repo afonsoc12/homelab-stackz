@@ -68,13 +68,13 @@ services:
                 condition: service_healthy
         environment:
             - TZ=${TZ}
-            - API_KEY=${INTRUSION_MONITOR_API_KEY}
-            - INFLUXDB_HOST=influxdb
-            - INFLUXDB_DATABASE=intrusion-monitor
-            - INFLUXDB_PORT=8086
-            - INFLUXDB_USER=
-            - INFLUXDB_PASSWORD=
-            - OPERATION_MODE=watchdog
+            - API_KEY=${MONITORING_INTRUSION_MONITOR_API_KEY}
+            - INFLUXDB_HOST=${MONITORING_INTRUSION_MONITOR_INFLUXDB_HOST}
+            - INFLUXDB_DATABASE=${MONITORING_INTRUSION_MONITOR_INFLUXDB_DATABASE}
+            - INFLUXDB_PORT=${MONITORING_INTRUSION_MONITOR_INFLUXDB_PORT}
+            - INFLUXDB_USER=${MONITORING_INTRUSION_MONITOR_INFLUXDB_USER}
+            - INFLUXDB_PASSWORD=${MONITORING_INTRUSION_MONITOR_INFLUXDB_PASSWORD}
+            - OPERATION_MODE=${MONITORING_INTRUSION_MONITOR_OPERATION_MODE}
             #- SSH_LOG_PATH=
             #- LOG_LEVEL=debug
         volumes:
