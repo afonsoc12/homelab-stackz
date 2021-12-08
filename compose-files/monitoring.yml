@@ -43,7 +43,7 @@ services:
 # Telegraf
 # ==================================================
     telegraf:
-        build: telegraf
+        build: ../containers/telegraf
         image: telegraf:latest # Custom image
         container_name: telegraf
         hostname: telegraf
