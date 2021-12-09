@@ -9,6 +9,9 @@ services:
         image: grafana/grafana:latest
         container_name: grafana
         user: ${PUID}
+        environment:
+            - GF_SERVER_ROOT_URL=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
+            - GF_SERVER_DOMAIN=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
         volumes:
             - ${APPDATA_PATH}/grafana:/var/lib/grafana
             - ${APPDATA_PATH}/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
