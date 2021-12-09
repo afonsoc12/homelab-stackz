@@ -1,0 +1,99 @@
+version: '3'
+
+services:
+
+# ==================================================
+# Home-assistant
+# ==================================================
+    home-assistant:
+        image: homeassistant/raspberrypi4-homeassistant:stable
+        container_name: home-assistant
+        depends_on:
+            - mosquitto
+            - node-red
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/home-assistant:/config
+        devices:
+            - /dev/snd:/dev/snd
+        network_mode: host
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Mosquitto
+# ==================================================
+    mosquitto:
+        image: eclipse-mosquitto:latest
+        container_name: mosquitto
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/mosquitto/config:/mosquitto/config
+            - ${APPDATA_PATH}/mosquitto/data:/mosquitto/data
+            - ${APPDATA_PATH}/mosquitto/log:/mosquitto/log
+            - ${APPDATA_PATH}/swag/etc/letsencrypt:/le-ssl:ro # Certificates
+        ports:
+            - 1883:1883
+            - 8883:8883 
+        networks:
+            - monitoring
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Node-RED
+# ==================================================
+    node-red:
+        image: nodered/node-red:latest
+        container_name: node-red
+        user: "0"
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/node-red:/data
+        #ports:
+          #  - 1880:1880
+         #   - 33456:33456 # For node-red-contrib-alexa-remote2
+          #  - 40317:40317 # For node-red-contrib-amazon-echo
+        network_mode: host
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Grocy
+# ==================================================
+    # grocy:
+    #     image: linuxserver/grocy:latest
+    #     container_name: grocy
+    #     environment:
+    #       - PUID=${PUID}
+    #       - PGID=${PGID}
+    #       - TZ=${TZ}
+    #     volumes:
+    #       - ${APPDATA_PATH}/grocy:/config
+    #     ports:
+    #       - 9283:80
+    #     network_mode: bridge
+    #     restart: ${RESTART_POLICY}
+
+    # barcode-buddy:
+    #     image: f0rc3/barcodebuddy-docker:arm64v8-v1.6.5.0 #f0rc3/barcodebuddy-docker:arm64v8-latest
+    #     container_name: barcode-buddy
+    #     environment:
+    #         - TZ=${TZ}
+    #     volumes:
+    #       - ${APPDATA_PATH}/barcode-buddy:/config
+    #     ports:
+    #       - 9280:80
+    #     network_mode: bridge
+    #     restart: ${RESTART_POLICY}
+
+#networks:
+#    home-assistant:
+#        name: home-assistant
+#        driver: bridge
+
+networks:
+    # Must have started monitoring before
+    monitoring: 
+        external:
+            name: monitoring
