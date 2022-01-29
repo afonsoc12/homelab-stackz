@@ -6,7 +6,7 @@ services:
 # Portainer
 # ==================================================
     portainer:
-        image: portainer/portainer:latest
+        image: portainer/portainer-ce:latest
         container_name: portainer
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
@@ -125,7 +125,7 @@ services:
             - 443:443
         networks: 
             - reverse-proxy
-            - authelia
+            # - reverse-proxy-overlay
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -142,6 +142,7 @@ services:
             - ${APPDATA_PATH}/authelia:/config
         networks:
             - authelia
+            - reverse-proxy
         depends_on:
             - mariadb-authelia
         restart: ${RESTART_POLICY}
@@ -183,7 +184,15 @@ networks:
         ipam:
             config:
                 - subnet: 192.168.144.0/20
-
+    
+    # Must be created before
+    reverse-proxy-overlay:
+        name: reverse-proxy-overlay
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.11.0.0/16
+                
     authelia:
         name: authelia
         driver: bridge
