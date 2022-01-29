@@ -185,14 +185,14 @@ networks:
             config:
                 - subnet: 192.168.144.0/20
     
-    # Must be created before
-    reverse-proxy-overlay:
-        name: reverse-proxy-overlay
-        driver: overlay
-        ipam:
-            config:
-                - subnet: 10.11.0.0/16
-                
+    # # Must be created before
+    # reverse-proxy-overlay:
+    #     name: reverse-proxy-overlay
+    #     driver: overlay
+    #     ipam:
+    #         config:
+    #             - subnet: 10.11.0.0/16
+
     authelia:
         name: authelia
         driver: bridge
