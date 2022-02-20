@@ -69,6 +69,44 @@ services:
         restart: ${RESTART_POLICY}
 
 # ==================================================
+# Prometheus
+# ==================================================
+    prometheus:
+        image: prom/prometheus:latest   
+        container_name: prometheus
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/prometheus:/prometheus
+        ports:
+            - 9090:9090
+        command:
+            - --config.file=/prometheus/prometheus.yml
+            - --web.enable-admin-api
+        networks:
+            - monitoring
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Blackbox Exporter
+# ==================================================
+    blackbox-exporter:
+        image: prom/blackbox-exporter:latest   
+        container_name: blackbox-exporter
+        depends_on:
+            - prometheus
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/blackbox-exporter:/config
+        ports:
+            - 9115:9115
+        networks:
+            - monitoring
+        command: "--config.file=/config/blackbox.yml"
+        restart: ${RESTART_POLICY}
+
+# ==================================================
 # Intrusion-monitor
 # ==================================================
     intrusion-monitor:
@@ -118,39 +156,39 @@ services:
 # ==================================================
 # Heimdall
 # ==================================================
-    heimdall:
-        image: linuxserver/heimdall:latest
-        container_name: heimdall
-        environment:
-            - PUID=${PUID}
-            - PGID=${PGID}
-            - TZ=${TZ}
-        volumes:
-            - ${APPDATA_PATH}/heimdall:/config
-        ports:
-            - 3060:80
-            - 3070:443
-        networks:
-            - proxy
-        restart: ${RESTART_POLICY}
+    # heimdall:
+    #     image: linuxserver/heimdall:latest
+    #     container_name: heimdall
+    #     environment:
+    #         - PUID=${PUID}
+    #         - PGID=${PGID}
+    #         - TZ=${TZ}
+    #     volumes:
+    #         - ${APPDATA_PATH}/heimdall:/config
+    #     ports:
+    #         - 3060:80
+    #         - 3070:443
+    #     networks:
+    #         - proxy
+    #     restart: ${RESTART_POLICY}
 
 # ==================================================
 # Homer
 # ==================================================
-    homer:
-        image: b4bz/homer:latest
-        container_name: homer
-        environment:
-            - UID=${PUID}
-            - GID=${PGID}
-            - TZ=${TZ}
-        volumes:
-            - ${APPDATA_PATH}/homer:/www/assets
-        ports:
-            - 8777:8080
-        networks:
-            - proxy
-        restart: ${RESTART_POLICY}
+    # homer:
+    #     image: b4bz/homer:latest
+    #     container_name: homer
+    #     environment:
+    #         - UID=${PUID}
+    #         - GID=${PGID}
+    #         - TZ=${TZ}
+    #     volumes:
+    #         - ${APPDATA_PATH}/homer:/www/assets
+    #     ports:
+    #         - 8777:8080
+    #     networks:
+    #         - proxy
+    #     restart: ${RESTART_POLICY}
 
 networks:
     monitoring:
