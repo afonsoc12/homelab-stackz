@@ -63,7 +63,7 @@ services:
             - HOST_MOUNT_PREFIX=/hostfs
         volumes:
             - ${APPDATA_PATH}/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-            - /:/hostfs:ro \
+            - /:/hostfs:ro
         networks:
             - monitoring
         restart: ${RESTART_POLICY}
