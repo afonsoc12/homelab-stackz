@@ -49,7 +49,7 @@ services:
         build: ../containers/telegraf
         image: telegraf:latest # Custom image
         container_name: telegraf
-        hostname: telegraf
+        hostname: ${HOSTNAME}
         user: telegraf:${DOCKER_GID}
         depends_on:
             influxdb:
