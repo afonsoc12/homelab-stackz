@@ -40,6 +40,7 @@ services:
     # No TZ because this container does not have tzdata by default
     volumes:
       - ${APPDATA_PATH}/firefly-cron:/firefly-cron
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - firefly-net
     depends_on:
