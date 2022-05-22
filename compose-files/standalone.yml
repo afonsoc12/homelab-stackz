@@ -15,7 +15,7 @@ services:
     #         - WATCHTOWER_DEBUG=true
     #         - WATCHTOWER_SCHEDULE=${STANDALONE_WATCHTOWER_SCHEDULE}   # Everyday at 1am
     #         #- WATCHTOWER_ROLLING_RESTART=true
-    #         - WATCHTOWER_TIMEOUT=60  
+    #         - WATCHTOWER_TIMEOUT=60
     #     volumes:
     #         - /var/run/docker.sock:/var/run/docker.sock
     #     network_mode: bridge

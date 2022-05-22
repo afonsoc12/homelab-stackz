@@ -115,7 +115,7 @@ services:
 # Prometheus
 # ==================================================
     prometheus:
-        image: prom/prometheus:latest   
+        image: prom/prometheus:latest
         container_name: prometheus
         environment:
             - TZ=${TZ}
@@ -128,14 +128,14 @@ services:
             - --web.enable-admin-api
         networks:
             - monitoring
-            - reverse-proxy	
+            - reverse-proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================
 # Blackbox Exporter
 # ==================================================
     blackbox-exporter:
-        image: prom/blackbox-exporter:latest   
+        image: prom/blackbox-exporter:latest
         container_name: blackbox-exporter
         depends_on:
             - prometheus
@@ -252,10 +252,9 @@ services:
     #     restart: ${RESTART_POLICY}
 
 networks:
-    monitoring:	
-        external: true	
-    monitoring-overlay:	
-        external: true	
-    reverse-proxy:	
-        external: true	
-            
+    monitoring:
+        external: true
+    monitoring-overlay:
+        external: true
+    reverse-proxy:
+        external: true

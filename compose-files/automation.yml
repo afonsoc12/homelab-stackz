@@ -35,7 +35,7 @@ services:
             # - ${APPDATA_PATH}/swag/etc/letsencrypt:/le-ssl:ro # Certificates
         ports:
             - 1883:1883
-            # - 8883:8883 
+            # - 8883:8883
         networks:
             - monitoring
         restart: ${RESTART_POLICY}
@@ -95,10 +95,10 @@ networks:
         driver: bridge
 
     # Must have started monitoring before
-    monitoring: 
+    monitoring:
         external:
             name: monitoring
-     
-    reverse-proxy: 
+
+    reverse-proxy:
         external:
             name: reverse-proxy

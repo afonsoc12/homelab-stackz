@@ -16,7 +16,7 @@ services:
             # - 8000:8000
         networks:
             - reverse-proxy
-            - portainer-overlay	
+            - portainer-overlay
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -95,7 +95,7 @@ services:
          #   - TUNNEL_ORIGIN_CERT=/home/nonroot/.cloudflared/cert.pem
         volumes:
             - /opt/docker/cloudflared:/home/nonroot/.cloudflared
-        networks: 
+        networks:
             reverse-proxy:
                 ipv4_address: 172.21.1.2
         command: "tunnel run ${MAIN_CLOUDFLARED_TUNNEL_ID}"
@@ -125,7 +125,7 @@ services:
         ports:
             - 80:80
             - 443:443
-        networks: 
+        networks:
             - reverse-proxy
             - reverse-proxy-overlay
         restart: ${RESTART_POLICY}
@@ -186,13 +186,13 @@ networks:
     #     ipam:
     #         config:
     #             - subnet: 192.168.144.0/20
-    
+
     reverse-proxy:
         external: true
-    
+
     reverse-proxy-overlay:
         external: true
-            
+
     # # Must be created before
     # reverse-proxy-overlay:
     #     name: reverse-proxy-overlay
