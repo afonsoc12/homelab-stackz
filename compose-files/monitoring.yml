@@ -89,8 +89,7 @@ services:
 # Telegraf
 # ==================================================
     telegraf:
-        build: ../containers/telegraf
-        image: telegraf:latest # Custom image
+        image: afonsoc12/telegraf:latest
         container_name: telegraf
         hostname: ${HOSTNAME}
         user: telegraf:${DOCKER_GID}

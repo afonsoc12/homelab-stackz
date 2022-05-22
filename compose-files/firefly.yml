@@ -37,7 +37,6 @@ services:
   firefly-cron:
     image: alpine:latest
     container_name: firefly-cron
-    # No TZ because this container does not have tzdata by default
     volumes:
       - ${APPDATA_PATH}/firefly-cron:/firefly-cron
       - /etc/localtime:/etc/localtime:ro
