@@ -78,7 +78,7 @@ services:
         depends_on:
             - openvpn-client
         restart: ${RESTART_POLICY}
-    
+
     #qbittorrent:
     #    image: linuxserver/qbittorrent:latest
     #    container_name: qbittorrent
@@ -99,7 +99,7 @@ services:
     #    depends_on:
     #        - openvpn-client
     #    restart: ${RESTART_POLICY}
-        
+
     #sabnzbd:
     #    image: linuxserver/sabnzbd:latest
     #    container_name: sabnzbd
@@ -118,7 +118,7 @@ services:
     #        - openvpn-client
     #    entrypoint: ["echo", "Container sabnzbd disabled by me on docker-compose.yml"]
     #    #restart: ${RESTART_POLICY}
-    
+
     #nzbget:
     #    image: linuxserver/nzbget:latest
     #    container_name: nzbget
@@ -153,7 +153,7 @@ services:
         depends_on:
             - openvpn-client
         #stdin_open: true
-        tty: true   
+        tty: true
         entrypoint: /bin/sh
         restart: ${RESTART_POLICY}
 
@@ -175,7 +175,7 @@ services:
        depends_on:
            - openvpn-client
        restart: ${RESTART_POLICY}
-        
+
 # ==================================================
 # Media Management Containers
 # ==================================================
@@ -228,7 +228,7 @@ services:
             - deluge
             - prowlarr
         restart: ${RESTART_POLICY}
-    
+
     # radarr-4k:
     #     image: linuxserver/radarr:latest
     #     container_name: radarr-4k
@@ -296,7 +296,7 @@ services:
         depends_on:
             - openvpn-client
         restart: ${RESTART_POLICY}
-    
+
     #nzbhydra2:
     #    image: linuxserver/nzbhydra2:latest
     #    container_name: nzbhydra2
@@ -335,7 +335,7 @@ services:
         networks:
             - proxy
         restart: ${RESTART_POLICY}
-    
+
     overseerr:
         image: linuxserver/overseerr:latest
         container_name: overseerr
