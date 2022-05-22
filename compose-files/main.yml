@@ -13,60 +13,41 @@ services:
             - ${APPDATA_PATH}/portainer:/data
         ports:
             - 9000:9000
-            - 8000:8000
+            # - 8000:8000
         networks:
             - reverse-proxy
+            - portainer-overlay	
         restart: ${RESTART_POLICY}
 
 # ==================================================
 # Pihole
 # ==================================================
-    pihole:
-        image: pihole/pihole:latest
-        container_name: pihole
-        hostname: pihole
-        cap_add:
-            - NET_ADMIN
-        environment:
-            - TZ=${TZ}
-            - WEBPASSWORD=${MAIN_PIHOLE_WEBPASSWORD}
-            - WEB_PORT=${MAIN_PIHOLE_WEB_PORT}
-        volumes:
-            - ${APPDATA_PATH}/pihole/config:/etc/pihole
-            - ${APPDATA_PATH}/pihole/dns:/etc/dnsmasq.d
-#        ports:
-            # - 53:53/tcp
-            # - 53:53/udp
-            # - 67:67/udp
-            # - 8880:80/tcp
-            # - 8843:443/tcp
-        network_mode: host
-        #networks:
-        #    pihole-macvlan:
-        #       ipv4_address: 10.1.1.2
-        restart: ${RESTART_POLICY}
-
-# ==================================================
-# OpenVPN - Access Server
-# ==================================================
-    # openvpn-as:
-    #     image: linuxserver/openvpn-as:latest
-    #     container_name: openvpn-as
-    #     hostname: openvpn-as
+  	    # pihole:
+    #     image: pihole/pihole:latest
+    #     container_name: pihole
+    #     hostname: pihole
     #     cap_add:
     #         - NET_ADMIN
     #     environment:
-    #         - PUID=${PUID}
-    #         - PGID=${PGID}
     #         - TZ=${TZ}
-    #         #- INTERFACE=eth0 #optional
+    #         - WEBPASSWORD=${MAIN_PIHOLE_WEBPASSWORD}
+    #         - WEB_PORT=${MAIN_PIHOLE_WEB_PORT}
+    #         # - DNSSEC=true
     #     volumes:
-    #         - ${APPDATA_PATH}/openvpn-as:/config
-    #     ports:
-    #         - 943:943
-    #         - 9443:9443
-    #         - 1194:1194/udp
-    #     network_mode: bridge
+    #         - ${APPDATA_PATH}/pihole/config:/etc/pihole
+    #         - ${APPDATA_PATH}/pihole/dns:/etc/dnsmasq.d
+    #     # ports:
+    #         # - 53:53/tcp
+    #         # - 53:53/udp
+    #         # - 67:67/udp
+    #         # - 8888:80/tcp
+    #         # - 8843:443/tcp
+    #     network_mode: host
+    #     # networks:
+    #         # - reverse-proxy
+    #     #networks:
+    #     #    pihole-macvlan:
+    #     #       ipv4_address: 10.1.1.2
     #     restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -95,10 +76,30 @@ services:
             - ${MAIN_WIREGUARD_SERVERPORT}:${MAIN_WIREGUARD_SERVERPORT}/udp
         sysctls:
             - net.ipv4.conf.all.src_valid_mark=1
-        networks:
-            - reverse-proxy
+        network_mode: bridge
         restart: ${RESTART_POLICY}
 
+# ==================================================
+# Cloudflared
+# ==================================================
+    # First run
+    # mkdir /opt/docker/cloudflared
+    # sudo chmod 777 /opt/docker/cloudflared
+    # docker run --rm -v /opt/docker/cloudflared:/home/nonroot/.cloudflared cloudflared:latest tunnel login
+    # docker run --rm -v /opt/docker/cloudflared:/home/nonroot/.cloudflared cloudflared:latest tunnel create <TUNNEL NAME>
+    # sudo chmod 700 /opt/docker/cloudflared
+    cloudflared:
+        image: afonsoc12/cloudflared:latest
+        container_name: cloudflared
+        #environment:
+         #   - TUNNEL_ORIGIN_CERT=/home/nonroot/.cloudflared/cert.pem
+        volumes:
+            - /opt/docker/cloudflared:/home/nonroot/.cloudflared
+        networks: 
+            reverse-proxy:
+                ipv4_address: 172.21.1.2
+        command: "tunnel run ${MAIN_CLOUDFLARED_TUNNEL_ID}"
+        restart: ${RESTART_POLICY}
 
 # ==================================================
 # Swag
@@ -113,6 +114,7 @@ services:
             - PGID=${PGID}
             - TZ=${TZ}
             - URL=${MAIN_SWAG_URL}
+            - EXTRA_DOMAINS=${MAIN_SWAG_EXTRA_DOMAINS}
             - SUBDOMAINS=${MAIN_SWAG_SUBDOMAINS}
             - VALIDATION=${MAIN_SWAG_VALIDATION}
             - DNSPLUGIN=${MAIN_SWAG_DNSPLUGIN}
@@ -125,7 +127,7 @@ services:
             - 443:443
         networks: 
             - reverse-proxy
-            # - reverse-proxy-overlay
+            - reverse-proxy-overlay
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -178,13 +180,19 @@ networks:
     #               aux_addresses:
     #                   host: 10.1.1.3
 
-    reverse-proxy:
-        name: reverse-proxy
-        driver: bridge
-        ipam:
-            config:
-                - subnet: 192.168.144.0/20
+    # reverse-proxy:
+    #     name: reverse-proxy
+    #     driver: bridge
+    #     ipam:
+    #         config:
+    #             - subnet: 192.168.144.0/20
     
+    reverse-proxy:
+        external: true
+    
+    reverse-proxy-overlay:
+        external: true
+            
     # # Must be created before
     # reverse-proxy-overlay:
     #     name: reverse-proxy-overlay
@@ -196,3 +204,6 @@ networks:
     authelia:
         name: authelia
         driver: bridge
+
+    portainer-overlay:
+        external: true

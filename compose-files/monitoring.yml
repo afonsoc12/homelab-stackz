@@ -10,8 +10,10 @@ services:
         container_name: grafana
         user: ${PUID}
         environment:
+            - TZ=${TZ}
             - GF_SERVER_ROOT_URL=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
             - GF_SERVER_DOMAIN=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
+            - GF_SERVER_SERVE_FROM_SUB_PATH=true
         volumes:
             - ${APPDATA_PATH}/grafana:/var/lib/grafana
             - ${APPDATA_PATH}/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
@@ -19,7 +21,46 @@ services:
             - 3000:3000
         networks:
             - monitoring
-            - proxy
+            - monitoring-overlay
+            - reverse-proxy
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Loki
+# ==================================================
+    loki:
+        image: grafana/loki:latest
+        container_name: loki
+        # user: ${PUID}
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/loki:/mnt/config
+        # ports:
+        #     - 3100:3100
+        command:
+            - -config.file=/mnt/config/loki-config.yml
+        networks:
+            - monitoring
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Promtail
+# ==================================================
+    promtail:
+        image: grafana/promtail:latest
+        container_name: promtail
+        # user: ${PUID}
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/promtail:/mnt/config
+            - /var/log:/var/log:ro
+            - /var/lib/docker/containers:/var/lib/docker/containers:ro
+        command:
+            - -config.file=/mnt/config/promtail-config.yml
+        networks:
+            - monitoring
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -34,6 +75,8 @@ services:
             timeout: 10s
             retries: 5
             start_period: 5s
+        environment:
+            - TZ=${TZ}
         volumes:
             - ${APPDATA_PATH}/influxdb:/var/lib/influxdb
         ports:
@@ -55,6 +98,7 @@ services:
             influxdb:
                 condition: service_healthy
         environment:
+            - TZ=${TZ}
             - HOST_ETC=/hostfs/etc
             - HOST_PROC=/hostfs/proc
             - HOST_SYS=/hostfs/sys
@@ -85,6 +129,7 @@ services:
             - --web.enable-admin-api
         networks:
             - monitoring
+            - reverse-proxy	
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -135,6 +180,23 @@ services:
         restart: ${RESTART_POLICY}
 
 # ==================================================
+# Uptime Kuma
+# ==================================================
+    uptime-kuma:
+        image: louislam/uptime-kuma:latest
+        container_name: uptime-kuma
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/uptime-kuma:/app/data
+        ports:
+            - 3001:3001
+        networks:
+            - monitoring
+            - reverse-proxy
+        restart: ${RESTART_POLICY}
+
+# ==================================================
 # Organizr
 # ==================================================
     organizr:
@@ -150,7 +212,7 @@ services:
         ports:
             - 3030:80
         networks:
-            - proxy
+            - reverse-proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -169,7 +231,7 @@ services:
     #         - 3060:80
     #         - 3070:443
     #     networks:
-    #         - proxy
+    #         - reverse-proxy
     #     restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -187,14 +249,14 @@ services:
     #     ports:
     #         - 8777:8080
     #     networks:
-    #         - proxy
+    #         - reverse-proxy
     #     restart: ${RESTART_POLICY}
 
 networks:
-    monitoring:
-        name: monitoring
-
-    proxy:
-        # Must have started swag before
-        external:
-            name: reverse-proxy
+    monitoring:	
+        external: true	
+    monitoring-overlay:	
+        external: true	
+    reverse-proxy:	
+        external: true	
+            

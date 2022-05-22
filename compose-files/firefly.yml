@@ -29,10 +29,22 @@ services:
       - 8666:8080
     networks:
       - firefly-net
-      - proxy
+      - reverse-proxy
     depends_on:
       - mariadb-firefly
     restart: ${RESTART_POLICY}
+  
+  firefly-cron:
+    image: alpine:latest
+    container_name: firefly-cron
+    # No TZ because this container does not have tzdata by default
+    volumes:
+      - ${APPDATA_PATH}/firefly-cron:/firefly-cron
+    networks:
+      - firefly-net
+    depends_on:
+      - firefly
+    command: sh -c " echo \"0 1 * * * wget http://firefly:8080/api/v1/cron/${FIREFLY_FIREFLY_CRON_TOKEN} >> /firefly-cron/firefly-cron.log 2>&1\" | crontab - && crond -f -L /dev/stdout"
 
   mariadb-firefly:
     image: linuxserver/mariadb:latest
@@ -55,7 +67,7 @@ networks:
     name: firefly-net
     driver: bridge
     
-  proxy:
+  reverse-proxy:
     # Must have started swag before
     external:
       name: reverse-proxy

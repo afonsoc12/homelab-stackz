@@ -32,10 +32,10 @@ services:
             - ${APPDATA_PATH}/mosquitto/config:/mosquitto/config
             - ${APPDATA_PATH}/mosquitto/data:/mosquitto/data
             - ${APPDATA_PATH}/mosquitto/log:/mosquitto/log
-            - ${APPDATA_PATH}/swag/etc/letsencrypt:/le-ssl:ro # Certificates
+            # - ${APPDATA_PATH}/swag/etc/letsencrypt:/le-ssl:ro # Certificates
         ports:
             - 1883:1883
-            - 8883:8883 
+            # - 8883:8883 
         networks:
             - monitoring
         restart: ${RESTART_POLICY}
@@ -51,11 +51,13 @@ services:
             - TZ=${TZ}
         volumes:
             - ${APPDATA_PATH}/node-red:/data
-        #ports:
-          #  - 1880:1880
-         #   - 33456:33456 # For node-red-contrib-alexa-remote2
+        ports:
+            - 1880:1880
+            - 33456:33456 # For node-red-contrib-alexa-remote2
           #  - 40317:40317 # For node-red-contrib-amazon-echo
-        network_mode: host
+        networks:
+            - home-assistant
+            - reverse-proxy
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -87,13 +89,16 @@ services:
     #     network_mode: bridge
     #     restart: ${RESTART_POLICY}
 
-#networks:
-#    home-assistant:
-#        name: home-assistant
-#        driver: bridge
-
 networks:
+    home-assistant:
+        name: home-assistant
+        driver: bridge
+
     # Must have started monitoring before
     monitoring: 
         external:
             name: monitoring
+     
+    reverse-proxy: 
+        external:
+            name: reverse-proxy
