@@ -51,13 +51,7 @@ services:
             - TZ=${TZ}
         volumes:
             - ${APPDATA_PATH}/node-red:/data
-        ports:
-            - 1880:1880
-            - 33456:33456 # For node-red-contrib-alexa-remote2
-          #  - 40317:40317 # For node-red-contrib-amazon-echo
-        networks:
-            - home-assistant
-            - reverse-proxy
+        network_mode: host
         restart: ${RESTART_POLICY}
 
 # ==================================================
