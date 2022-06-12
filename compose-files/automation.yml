@@ -38,6 +38,7 @@ services:
             # - 8883:8883
         networks:
             - monitoring
+            - automationn-overlay
         restart: ${RESTART_POLICY}
 
 # ==================================================
@@ -51,6 +52,7 @@ services:
             - TZ=${TZ}
         volumes:
             - ${APPDATA_PATH}/node-red:/data
+            - ${AUTOMATION_NODE_RED_SSH_KEYS_PATH}:/ssh:ro
         network_mode: host
         restart: ${RESTART_POLICY}
 
@@ -87,6 +89,10 @@ networks:
     home-assistant:
         name: home-assistant
         driver: bridge
+
+    automation-overlay:
+        external:
+            name: automation-overlay
 
     # Must have started monitoring before
     monitoring:
