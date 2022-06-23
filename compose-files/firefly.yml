@@ -13,6 +13,10 @@ services:
       - DB_DATABASE=${FIREFLY_FIREFLY_DB_NAME}
       - DB_USERNAME=${FIREFLY_FIREFLY_DB_USERNAME}
       - DB_PASSWORD=${FIREFLY_FIREFLY_DB_PASSWORD}
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - REDIS_HOST=redis-firefly
+      - REDIS_PORT=6379
       - APP_URL=${FIREFLY_FIREFLY_APP_URL}
       - TRUSTED_PROXIES=**
       - MAIL_MAILER=${FIREFLY_FIREFLY_MAIL_MAILER}
@@ -32,6 +36,17 @@ services:
       - reverse-proxy
     depends_on:
       - mariadb-firefly
+    restart: ${RESTART_POLICY}
+
+  redis-firefly:
+    image: redis:latest
+    container_name: redis-firefly
+    environment:
+      - TZ=${TZ}
+    networks:
+      - firefly-net
+    depends_on:
+      - firefly
     restart: ${RESTART_POLICY}
 
   firefly-cron:

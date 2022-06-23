@@ -116,7 +116,7 @@ services:
             - MQTT_USERNAME=${MONITORING_TELEGRAF_MQTT_USERNAME}
             - MQTT_PASSWORD=${MONITORING_TELEGRAF_MQTT_PASSWORD}
         volumes:
-            - ${APPDATA_PATH}/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+            - ${APPDATA_PATH}/telegraf:/etc/telegraf/telegraf:ro
             - /:/hostfs:ro
         networks:
             - monitoring

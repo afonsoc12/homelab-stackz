@@ -21,6 +21,25 @@ services:
         restart: ${RESTART_POLICY}
 
 # ==================================================
+# ESPHome
+# ==================================================
+    esphome:
+        container_name: esphome
+        image: esphome/esphome:latest
+        depends_on:
+            - mosquitto
+            - node-red
+            - home-assistant
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/esphome:/config
+            # - /etc/localtime:/etc/localtime:ro
+        privileged: true
+        network_mode: host
+        restart: ${RESTART_POLICY}
+
+# ==================================================
 # Mosquitto
 # ==================================================
     mosquitto:
