@@ -57,7 +57,7 @@ services:
             # - 8883:8883
         networks:
             - monitoring
-            - automationn-overlay
+            - automation-overlay
         restart: ${RESTART_POLICY}
 
 # ==================================================
