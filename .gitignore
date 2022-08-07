@@ -9,6 +9,8 @@ __pycache__/
 # C extensions
 *.so
 
+# Ansible
+ansible/inventory/hosts.cfg
 # Distribution / packaging
 .Python
 build/
@@ -106,10 +108,9 @@ celerybeat.pid
 
 # Environments
 .env
+*.env
 .venv
-env/
 venv/
-ENV/
 env.bak/
 venv.bak/
 

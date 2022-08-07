@@ -6,7 +6,7 @@ services:
 # Home-assistant
 # ==================================================
     home-assistant:
-        image: homeassistant/raspberrypi4-homeassistant:stable
+        image: homeassistant/homeassistant:stable
         container_name: home-assistant
         depends_on:
             - mosquitto
