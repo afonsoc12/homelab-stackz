@@ -197,30 +197,25 @@ networks:
     #               aux_addresses:
     #                   host: 10.1.1.3
 
-    # reverse-proxy:
-    #     name: reverse-proxy
-    #     driver: bridge
-    #     ipam:
-    #         config:
-    #             - subnet: 192.168.144.0/20
-
     reverse-proxy:
-        external: true
+        name: reverse-proxy
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.21.0.0/16
 
+    # Must be created before
     reverse-proxy-overlay:
-        external: true
-
-    # # Must be created before
-    # reverse-proxy-overlay:
-    #     name: reverse-proxy-overlay
-    #     driver: overlay
-    #     ipam:
-    #         config:
-    #             - subnet: 10.11.0.0/16
+        name: reverse-proxy-overlay
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.11.0.0/16
 
     authelia:
         name: authelia
         driver: bridge
 
     portainer-overlay:
-        external: true
+        name: portainer-overlay
+        driver: overlay

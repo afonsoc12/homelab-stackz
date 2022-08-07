@@ -6,7 +6,7 @@ services:
 # Home-assistant
 # ==================================================
     home-assistant:
-        image: homeassistant/homeassistant:stable
+        image: homeassistant/home-assistant:stable
         container_name: home-assistant
         depends_on:
             - mosquitto
@@ -110,8 +110,7 @@ networks:
         driver: bridge
 
     automation-overlay:
-        external:
-            name: automation-overlay
+        driver: overlay
 
     # Must have started monitoring before
     monitoring:

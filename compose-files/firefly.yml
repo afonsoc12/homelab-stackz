@@ -32,7 +32,7 @@ services:
     # You may disable ports if they are forwarded by reverse proxy
       - 8666:8080
     networks:
-      - firefly-net
+      - firefly
       - reverse-proxy
     depends_on:
       - mariadb-firefly
@@ -44,7 +44,7 @@ services:
     environment:
       - TZ=${TZ}
     networks:
-      - firefly-net
+      - firefly
     depends_on:
       - firefly
     restart: ${RESTART_POLICY}
@@ -56,7 +56,7 @@ services:
       - ${APPDATA_PATH}/firefly-cron:/firefly-cron
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - firefly-net
+      - firefly
     depends_on:
       - firefly
     command: sh -c " echo \"15 0 * * * wget http://firefly:8080/api/v1/cron/${FIREFLY_FIREFLY_CRON_TOKEN} >> /firefly-cron/firefly-cron.log 2>&1\" | crontab - && crond -f -L /dev/stdout"
@@ -74,15 +74,14 @@ services:
     #ports:
     #  - 3306:3306
     networks:
-      - firefly-net
+      - firefly
     restart: ${RESTART_POLICY}
 
 networks:
-  firefly-net:
-    name: firefly-net
+  firefly:
+    name: firefly
     driver: bridge
 
   reverse-proxy:
-    # Must have started swag before
     external:
       name: reverse-proxy
