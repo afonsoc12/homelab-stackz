@@ -267,7 +267,6 @@ networks:
         name: monitoring
         driver: bridge
     monitoring-overlay:
-        external: true
         driver: overlay
     reverse-proxy:
         external: true
