@@ -206,16 +206,13 @@ networks:
 
     # Must be created before
     reverse-proxy-overlay:
-        name: reverse-proxy-overlay
+        external: true
         driver: overlay
-        ipam:
-            config:
-                - subnet: 10.11.0.0/16
 
     authelia:
         name: authelia
         driver: bridge
 
     portainer-overlay:
-        name: portainer-overlay
+        external: true
         driver: overlay

@@ -102,9 +102,6 @@ services:
         container_name: telegraf
         hostname: ${HOSTNAME}
         user: telegraf:${DOCKER_GID}
-        depends_on:
-            influxdb:
-                condition: service_healthy
         environment:
             - TZ=${TZ}
             - HOST_ETC=/hostfs/etc
@@ -267,6 +264,7 @@ networks:
         name: monitoring
         driver: bridge
     monitoring-overlay:
+        external: true
         driver: overlay
     reverse-proxy:
         external: true
