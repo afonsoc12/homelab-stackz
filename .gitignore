@@ -1,5 +1,10 @@
+/wip
+
 # Flake 8
 .flake8
+
+# Ansible
+/ansible/collections/*tar.gz
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
