@@ -183,8 +183,8 @@ services:
             #- LOG_LEVEL=debug
         volumes:
             - /var/log/ssh-intrusion.log:/watchdog/log/auth.log:ro
-        ports:
-            - 7007:7007
+        # ports:
+        #     - 7007:7007
         networks:
             - monitoring
         restart: ${RESTART_POLICY}
