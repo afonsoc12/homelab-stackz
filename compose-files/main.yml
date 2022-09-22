@@ -183,6 +183,32 @@ services:
             - authelia
         restart: ${RESTART_POLICY}
 
+    db-backup-authelia:
+        image: tiredofit/db-backup:latest
+        container_name: db-backup-authelia
+        environment:
+            - TZ=${TZ}
+            - HOSTNAME=${HOSTNAME}
+            - DB_TYPE=mariadb
+            - DB_HOST=mariadb-authelia
+            - DB_NAME=authelia
+            - DB_USER=root
+            - DB_PASS=${MAIN_MARIADB_AUTHELIA_ROOT_PASSWORD}
+            - DB_DUMP_FREQ=1440
+            # - DB_DUMP_BEGIN=0000
+            - DB_CLEANUP_TIME=129600 # 3 months
+            - CHECKSUM=SHA1
+            - COMPRESSION=GZ
+            - GZ_RSYNCABLE=TRUE
+            - CONTAINER_ENABLE_MONITORING=FALSE
+        volumes:
+            - ${APPDATA_PATH}/mariadb-authelia/db-backup:/backup
+            - ${APPDATA_PATH}/db-backup/pre:/assets/scripts/pre
+            - ${APPDATA_PATH}/db-backup/post:/assets/scripts/post
+        networks:
+            - authelia
+        restart: ${RESTART_POLICY}
+
 networks:
     # pihole-macvlan:
     #     name: pihole-macvlan
