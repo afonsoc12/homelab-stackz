@@ -43,6 +43,8 @@ services:
     container_name: redis-firefly
     environment:
       - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/redis-firefly:/data
     networks:
       - firefly
     depends_on:
