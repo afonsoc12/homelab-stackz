@@ -89,7 +89,7 @@ services:
         - DB_HOST=mariadb-firefly
         - DB_NAME=firefly
         - DB_USER=root
-        - DB_PASS=${MAIN_MARIADB_FIREFLY_ROOT_PASSWORD}
+        - DB_PASS=${FIREFLY_MARIADB_FIREFLY_ROOT_PASSWORD}
         - DB_DUMP_FREQ=1440
         # - DB_DUMP_BEGIN=0000
         - DB_CLEANUP_TIME=129600 # 3 months
