@@ -24,17 +24,17 @@ services:
 # ==================================================
 # ddclient
 # ==================================================
-    ddclient:
-        image: linuxserver/ddclient:latest
-        container_name: ddclient
-        environment:
-            - PUID=${PUID}
-            - PGID=${PGID}
-            - TZ=${TZ}
-        volumes:
-            - ${APPDATA_PATH}/ddclient:/config
-        network_mode: bridge
-        restart: ${RESTART_POLICY}
+    # ddclient:
+    #     image: linuxserver/ddclient:latest
+    #     container_name: ddclient
+    #     environment:
+    #         - PUID=${PUID}
+    #         - PGID=${PGID}
+    #         - TZ=${TZ}
+    #     volumes:
+    #         - ${APPDATA_PATH}/ddclient:/config
+    #     network_mode: bridge
+    #     restart: ${RESTART_POLICY}
 
 # ==================================================
 # Duplicati
@@ -55,3 +55,83 @@ services:
     #         - 8200:8200
     #     network_mode: bridge
     #     restart: ${RESTART_POLICY}
+
+# ==================================================
+# Backup-utils
+# ==================================================
+    backup-utils:
+        image: afonsoc12/backup-utils:latest
+        container_name: backup-utils
+        hostname: ${HOSTNAME}
+        tty: true
+        cap_add:
+            - SYS_ADMIN
+        security_opt:
+            - apparmor:unconfined
+        environment:
+            - TZ=${TZ}
+            - RCLONE_S3_PROVIDER=${STANDALONE_BACKUP_UTILS_RCLONE_S3_PROVIDER}
+            - RCLONE_S3_ACCESS_KEY_ID=${STANDALONE_BACKUP_UTILS_RCLONE_S3_ACCESS_KEY_ID}
+            - RCLONE_S3_SECRET_ACCESS_KEY=${STANDALONE_BACKUP_UTILS_RCLONE_S3_SECRET_ACCESS_KEY}
+            - RCLONE_S3_REGION=${STANDALONE_BACKUP_UTILS_RCLONE_S3_REGION}
+            - RCLONE_S3_LOCATION_CONSTRAINT=${STANDALONE_BACKUP_UTILS_RCLONE_S3_LOCATION_CONSTRAINT}
+            - RCLONE_S3_STORAGE_CLASS=${STANDALONE_BACKUP_UTILS_RCLONE_S3_STORAGE_CLASS}
+            - RESTIC_REPOSITORY=${STANDALONE_BACKUP_UTILS_RESTIC_REPOSITORY}
+            - RESTIC_PASSWORD=${STANDALONE_BACKUP_UTILS_RESTIC_PASSWORD}
+            - RESTIC_PROGRESS_FPS=1
+            - B2_ACCOUNT_ID=${STANDALONE_BACKUP_UTILS_B2_ACCOUNT_ID}
+            - B2_ACCOUNT_KEY=${STANDALONE_BACKUP_UTILS_B2_ACCOUNT_KEY}
+        # command:
+        #     - rclone
+        #     - rcd
+        #     - --rc-web-gui
+        #     - --rc-web-gui-update
+        #     - --rc-web-gui-force-update
+        #     - --rc-web-gui-no-open-browser
+        #     - --rc-addr :5572
+        #     - --rc-user rclone
+        #     - --rc-pass rclone
+        volumes:
+            - ${APPDATA_PATH}/backup-utils:/config
+            - ~/.ssh:/root/.ssh:ro
+            - ${APPDATA_PATH}:${APPDATA_PATH}:ro
+        devices:
+            - /dev/fuse
+        # ports:
+        #     - 5572:5572
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Dashy
+# ==================================================
+    dashy:
+        image: lissy93/dashy:latest
+        container_name: dashy
+        environment:
+            - TZ=${TZ}
+        volumes:
+            - ${APPDATA_PATH}/dashy:/app/public
+        ports:
+            - 7000:80
+        healthcheck:
+            test: ['CMD', 'node', '/app/services/healthcheck']
+            interval: 1m30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
+
+# ==================================================
+# Homepage
+# ==================================================
+    homepage:
+        image: ghcr.io/benphelps/homepage:latest
+        container_name: homepage
+        ports:
+            - 3333:3000
+        volumes:
+            - ${APPDATA_PATH}/homepage:/app/config
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
