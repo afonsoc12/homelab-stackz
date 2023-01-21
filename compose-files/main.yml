@@ -99,24 +99,15 @@ services:
 # ==================================================
 # Cloudflared
 # ==================================================
-    # First run
-    # mkdir /opt/docker/cloudflared
-    # sudo chmod 777 -R /opt/docker/cloudflared
-    # sudo chown root:root -R /opt/docker/cloudflared
-    # docker run --rm -v /opt/docker/cloudflared:/home/nonroot/.cloudflared cloudflared:latest tunnel login
-    # docker run --rm -v /opt/docker/cloudflared:/home/nonroot/.cloudflared cloudflared:latest tunnel create <TUNNEL NAME>
-    # sudo chmod 700 /opt/docker/cloudflared
     cloudflared:
         image: afonsoc12/cloudflared:latest
         container_name: cloudflared
-        #environment:
-         #   - TUNNEL_ORIGIN_CERT=/home/nonroot/.cloudflared/cert.pem
-        volumes:
-            - /opt/docker/cloudflared:/home/nonroot/.cloudflared
+        environment:
+           - TUNNEL_TOKEN=${MAIN_CLOUDFLARED_TUNNEL_TOKEN}
         networks:
             reverse-proxy:
                 ipv4_address: 172.21.1.2
-        command: "tunnel run ${MAIN_CLOUDFLARED_TUNNEL_ID}"
+        command: "tunnel run --no-autoupdate"
         restart: ${RESTART_POLICY}
 
 # ==================================================

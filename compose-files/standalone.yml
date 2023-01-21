@@ -122,16 +122,3 @@ services:
             start_period: 40s
         network_mode: bridge
         restart: ${RESTART_POLICY}
-
-# ==================================================
-# Homepage
-# ==================================================
-    homepage:
-        image: ghcr.io/benphelps/homepage:latest
-        container_name: homepage
-        ports:
-            - 3333:3000
-        volumes:
-            - ${APPDATA_PATH}/homepage:/app/config
-        network_mode: bridge
-        restart: ${RESTART_POLICY}

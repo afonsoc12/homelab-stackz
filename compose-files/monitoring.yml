@@ -5,25 +5,25 @@ services:
 # ==================================================
 # Grafana
 # ==================================================
-    grafana:
-        image: grafana/grafana:latest
-        container_name: grafana
-        user: ${PUID}
-        environment:
-            - TZ=${TZ}
-            - GF_SERVER_ROOT_URL=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
-            - GF_SERVER_DOMAIN=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
-            - GF_SERVER_SERVE_FROM_SUB_PATH=true
-        volumes:
-            - ${APPDATA_PATH}/grafana:/var/lib/grafana
-            - ${APPDATA_PATH}/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
-        ports:
-            - 3000:3000
-        networks:
-            - monitoring
-            - monitoring-overlay
-            - reverse-proxy
-        restart: ${RESTART_POLICY}
+    # grafana:
+    #     image: grafana/grafana:latest
+    #     container_name: grafana
+    #     user: ${PUID}
+    #     environment:
+    #         - TZ=${TZ}
+    #         - GF_SERVER_ROOT_URL=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
+    #         - GF_SERVER_DOMAIN=${MONITORING_GRAFANA_GF_SERVER_ROOT_URL}
+    #         - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    #     volumes:
+    #         - ${APPDATA_PATH}/grafana:/var/lib/grafana
+    #         - ${APPDATA_PATH}/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+    #     ports:
+    #         - 3000:3000
+    #     networks:
+    #         - monitoring
+    #         - monitoring-overlay
+    #         - reverse-proxy
+    #     restart: ${RESTART_POLICY}
 
 # ==================================================
 # Loki
@@ -236,21 +236,21 @@ services:
 # ==================================================
 # Organizr
 # ==================================================
-    organizr:
-        image: organizr/organizr:latest
-        container_name: organizr
-        environment:
-            - PUID=${PUID}
-            - PGID=${PGID}
-            - fpm=true #"false" `#optional`
-            #- branch="v2-master" `#optional`
-        volumes:
-            - ${APPDATA_PATH}/organizr:/config
-        ports:
-            - 3030:80
-        networks:
-            - reverse-proxy
-        restart: ${RESTART_POLICY}
+    # organizr:
+    #     image: organizr/organizr:latest
+    #     container_name: organizr
+    #     environment:
+    #         - PUID=${PUID}
+    #         - PGID=${PGID}
+    #         - fpm=true #"false" `#optional`
+    #         #- branch="v2-master" `#optional`
+    #     volumes:
+    #         - ${APPDATA_PATH}/organizr:/config
+    #     ports:
+    #         - 3030:80
+    #     networks:
+    #         - reverse-proxy
+    #     restart: ${RESTART_POLICY}
 
 # ==================================================
 # Heimdall
@@ -288,6 +288,19 @@ services:
     #     networks:
     #         - reverse-proxy
     #     restart: ${RESTART_POLICY}
+
+# ==================================================
+# Homepage
+# ==================================================
+    homepage:
+        image: ghcr.io/benphelps/homepage:latest
+        container_name: homepage
+        ports:
+            - 3333:3000
+        volumes:
+            - ${APPDATA_PATH}/homepage:/app/config
+        network_mode: bridge
+        restart: ${RESTART_POLICY}
 
 networks:
     monitoring:
